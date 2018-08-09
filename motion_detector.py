@@ -18,7 +18,7 @@ def detect(s):
             area = cv2.contourArea(cnt)
             (x,y,w,h) = cv2.boundingRect(cnt)
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),3)
-            cv2.putText(frame,str(area), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
+            cv2.putText(frame,str(area), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 1, 255)
         cv2.imshow('frame',frame)
         cv2.imshow('opening',opening)
         k = cv2.waitKey(1) &0xFF
