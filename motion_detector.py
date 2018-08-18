@@ -4,17 +4,23 @@ import time
 import winsound
 def detect(s):
     cap = cv2.VideoCapture(s)
+    frame = cap.read()[1]
+    fshape = frame.shape
+    fheight = fshape[0]
+    fwidth = fshape[1]
     fgbg = cv2.createBackgroundSubtractorMOG2()
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.avi', fourcc, 1.0, (640, 480))
+    out = cv2.VideoWriter('output.avi', fourcc, 20.0,(fwidth,fheight))
+    
     count =0
-    start_time = time.time()
+    #start_time = time.time()
     while True:
         ret ,frame = cap.read()
         if not ret:
             break
-        out.write(frame)
+        
         #print(frame.shape)
+        
         mask = fgbg.apply(frame)
         kernel = np.ones((10,10),np.uint8)
         cv2.line(frame,(0,250),(frame.shape[1],250),(0,255,0),2)
@@ -27,6 +33,7 @@ def detect(s):
         text = "Number of vehicles -"+str(count)
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(frame, text, (20,30), font, 1, (0, 0, 255), 2)
+        out.write(frame)
         for cnt in cnts:
             area = cv2.contourArea(cnt)
             if area < 1000 :
