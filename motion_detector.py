@@ -8,10 +8,9 @@ def detect(s):
     out = cv2.VideoWriter('output.avi', fourcc, 20.0, (640, 480))
     count =0
     start_time = time.time()
-    ret, frame = cap.read()
-    while ret:
+    while True:
         ret,frame = cap.read()
-        if (ret == 0):
+        if not ret:
             break
         out.write(frame)
         #print(frame.shape)
@@ -48,4 +47,3 @@ def detect(s):
     cap.release()
     cv2.destroyAllWindows()
 
-detect('motion2.mp4')
