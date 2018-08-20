@@ -10,15 +10,20 @@ def detect(s):
     fwidth = fshape[1]
     fgbg = cv2.createBackgroundSubtractorMOG2()
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.avi', fourcc, 20.0,(fwidth,fheight))
+    out = cv2.VideoWriter('output.avi', fourcc, 25,(fwidth,fheight))
     
     count =0
-    #start_time = time.time()
+    start_time = time.time()
     while True:
         ret ,frame = cap.read()
         if not ret:
             break
-        
+        recent_time = time.time()
+        #Total count of vehicles for 2 min
+        if((recent_time-start_time)>120):
+            count = 0
+            start_time = recent_time
+
         #print(frame.shape)
         
         mask = fgbg.apply(frame)
@@ -29,7 +34,7 @@ def detect(s):
         cnts = cv2.findContours(opening.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[1]
         green =  (0,255,0)
         red = (0,0,255)
-        recent_time = time.time()
+
         text = "Number of vehicles -"+str(count)
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(frame, text, (20,30), font, 1, (0, 0, 255), 2)
@@ -45,10 +50,12 @@ def detect(s):
             cnt_x = int(x+w/2)
             cnt_y = int(y+h/2)
             cv2.circle(frame, (cnt_x,cnt_y), 7, (255, 255, 255), -1)
+
             if (cnt_y<254 and cnt_y>246):
                 cv2.line(frame, (0, 250), (frame.shape[1], 250), red, 2)
                 count+=1
                 #winsound.Beep(2000,500)
+
 
         #print(count)
 
@@ -57,7 +64,8 @@ def detect(s):
         k = cv2.waitKey(1) & 0xFF
         if k == ord('q') :
             break
-    return count
+
     out.release()
     cap.release()
     cv2.destroyAllWindows()
+    return count
