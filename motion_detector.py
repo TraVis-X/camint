@@ -37,7 +37,7 @@ def detect(s):
 
         text = "Number of vehicles -"+str(count)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(frame, text, (20,30), font, 1, (0, 0, 255), 2)
+        cv2.putText(frame, text, (20,30), font, 0.5, (0, 0, 255), 2)
         out.write(frame)
         for cnt in cnts:
             area = cv2.contourArea(cnt)
