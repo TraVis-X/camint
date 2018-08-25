@@ -43,7 +43,7 @@ def detect(s):
         text1 = "Left side :" + str(count1)
         text2 = "Right side :" + str(count2)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(frame, text, (20, 30), font, 0.6, (255, 0, 255), 2)
+        cv2.putText(frame, text, (20, 30), font, 0.8, (255, 255, 0), 2)
         cv2.putText(frame, text1, (20, 60), font, 0.6, (255, 0, 255), 2)
         cv2.putText(frame, text2, (380, 60), font, 0.6, (255, 0, 255), 2)
         out.write(frame)
