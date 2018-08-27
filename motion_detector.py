@@ -1,29 +1,55 @@
 import cv2
 import numpy as np
 import time
-import winsound
+import datetime
+#import winsound
+import matplotlib.pyplot as plt
+from drawnow import *
+countArr = [0,0]
+timeArr = [0,0]
+flag = 0
+def makeplot():
+    global flag
+    if(timeArr[-2] == 120 and timeArr[-1] <= 10):
+        flag = 1
+    if(flag == 1):
+        timeArr[-1] = timeArr[-1]+120
+    plt.plot(timeArr, countArr)
+    #plt.plot(countArr ,'ro-')
+
 def detect(s):
     cap = cv2.VideoCapture(s)
     frame = cap.read()[1]
+    '''
     fshape = frame.shape
     fheight = fshape[0]
     fwidth = fshape[1]
+    '''
+    frame = cv2.resize(frame,(640,352))
     fgbg = cv2.createBackgroundSubtractorMOG2()
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.avi', fourcc, 25,(fwidth,fheight))
-    
+    out = cv2.VideoWriter('output.avi', fourcc, 25,(640,352))
+    #print(fwidth,fheight)
     count =0
+    flag = 0
+    fresh = 0
     start_time = time.time()
     while True:
         ret ,frame = cap.read()
+        frame = cv2.resize(frame, (640, 352))
         if not ret:
             break
         recent_time = time.time()
+        total_time = recent_time - start_time
         #Total count of vehicles for 2 min
-        if((recent_time-start_time)>120):
+        if(total_time>120):                      #refreshing count after every  2min
+            #TODO : send count and timestamp to webpage for plotting
+            fresh+=1
+            total_time+=fresh*120
             count = 0
             start_time = recent_time
-
+            countArr.append(count)
+            timeArr.append(total_time)
         #print(frame.shape)
         
         mask = fgbg.apply(frame)
@@ -37,7 +63,7 @@ def detect(s):
 
         text = "Number of vehicles -"+str(count)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(frame, text, (20,30), font, 0.5, (0, 0, 255), 2)
+        cv2.putText(frame, text, (20,30), font, 1, (0, 0, 255), 2)
         out.write(frame)
         for cnt in cnts:
             area = cv2.contourArea(cnt)
@@ -55,11 +81,15 @@ def detect(s):
                 cv2.line(frame, (0, 250), (frame.shape[1], 250), red, 2)
                 count+=1
                 #winsound.Beep(2000,500)
+                countArr.append(count)
+                total_time += fresh * 120
+                timeArr.append(total_time)
 
 
         #print(count)
+        drawnow(makeplot)
 
-        cv2.imshow('frame',frame)
+
         #cv2.imshow('opening',opening)
         k = cv2.waitKey(1) & 0xFF
         if k == ord('q') :
