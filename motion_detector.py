@@ -1,13 +1,14 @@
 import cv2
 import numpy as np
 import time
-import datetime
-#import winsound
 import matplotlib.pyplot as plt
+import threading
 from drawnow import *
+
 countArr = [0,0]
 timeArr = [0,0]
 flag = 0
+frame = np.zeros((352,640,3))
 def makeplot():
     plt.plot(timeArr, countArr,'ro')
     plt.ylabel('No. of Vehicles')
@@ -17,17 +18,9 @@ def makeplot():
 
 def detect(s):
     cap = cv2.VideoCapture(s)
-    frame = cap.read()[1]
-    '''
-    fshape = frame.shape
-    fheight = fshape[0]
-    fwidth = fshape[1]
-    '''
-    #frame = cv2.resize(frame,(640,352))
     fgbg = cv2.createBackgroundSubtractorMOG2()
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter('output.avi', fourcc, 25,(640,352))
-    #print(fwidth,fheight)
     count =0
     flag = 0
     fresh = 0
@@ -37,7 +30,6 @@ def detect(s):
         if not ret:
             cap = cv2.VideoCapture(s)
             continue
-        #frame = cv2.resize(frame, (640, 352))
         recent_time = time.time()
         total_time = recent_time - start_time
         #Total count of vehicles for 2 min
@@ -88,14 +80,15 @@ def detect(s):
 
 
         #print(count)
-        drawnow(makeplot)
+        #drawnow(makeplot)
         cv2.imshow('frame', frame)
 
         #cv2.imshow('opening',opening)
-        k = cv2.waitKey(1) & 0xFF
+        k = cv2.waitKey(27) & 0xFF
         if k == ord('q') :
             break
-
+    print('count Array',countArr)
+    print('time array',timeArr)
     out.release()
     cap.release()
     cv2.destroyAllWindows()
