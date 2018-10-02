@@ -1,14 +1,18 @@
 import cv2
 import numpy as np
 import time
-import matplotlib.pyplot as plt
-import threading
 from drawnow import *
+import csv
 
 countArr = [0,0]
 timeArr = [0,0]
 flag = 0
 frame = np.zeros((352,640,3))
+
+with open('example1.csv', 'w+') as csv_file1:
+    csv_writer = csv.writer(csv_file1)
+    csv_writer.writerow(["Time", "Count"])
+
 def makeplot():
     plt.plot(timeArr, countArr,'ro')
     plt.ylabel('No. of Vehicles')
@@ -42,6 +46,9 @@ def detect(s):
             countArr.append(count)
             timeArr.append(total_time)
             count=0
+            with open('example1.csv', 'a') as csv_file1:
+                csv_writer = csv.writer(csv_file1)
+                csv_writer.writerow([timeArr[-1], countArr[-1]])
             #drawnow(makeplot)
         #print(frame.shape)
         
@@ -74,9 +81,9 @@ def detect(s):
                 cv2.line(frame, (0, 250), (frame.shape[1], 250), red, 2)
                 count+=1
                 #winsound.Beep(2000,500)
-                #countArr.append(count)
+                countArr.append(count)
                 total_time += fresh * 120
-                #timeArr.append(total_time)
+                timeArr.append(total_time)
 
 
         #print(count)
@@ -93,3 +100,4 @@ def detect(s):
     cap.release()
     cv2.destroyAllWindows()
     return count
+detect('motion2.mp4')
