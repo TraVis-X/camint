@@ -17,5 +17,4 @@ while True:
                 firebase.post('parent/', {'Time': newVal[0], 'Count': newVal[1][:-1]})
                 print('Posted on Firebase')
             flag = 0
-            prev_time=newVal_time
     csv_file.close()
